@@ -3,10 +3,14 @@ package fr.sii.scoreboard.service.dto;
 import fr.sii.scoreboard.config.Constants;
 import fr.sii.scoreboard.domain.Authority;
 import fr.sii.scoreboard.domain.User;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.validation.constraints.*;
 
 /**
  * A DTO representing a user, with his authorities.
@@ -48,6 +52,8 @@ public class AdminUserDTO {
 
     private Set<String> authorities;
 
+    private TeamDTO team;
+
     public AdminUserDTO() {
         // Empty constructor needed for Jackson.
     }
@@ -66,6 +72,9 @@ public class AdminUserDTO {
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
         this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+        if (user.getTeam() != null) {
+            this.team = new TeamDTO(user.getTeam());
+        }
     }
 
     public Long getId() {
@@ -172,6 +181,14 @@ public class AdminUserDTO {
         this.authorities = authorities;
     }
 
+    public TeamDTO getTeam() {
+        return team;
+    }
+
+    public void setTeam(TeamDTO team) {
+        this.team = team;
+    }
+
     // prettier-ignore
     @Override
     public String toString() {
@@ -188,6 +205,7 @@ public class AdminUserDTO {
             ", lastModifiedBy='" + lastModifiedBy + '\'' +
             ", lastModifiedDate=" + lastModifiedDate +
             ", authorities=" + authorities +
+            ", team=" + team +
             "}";
     }
 }

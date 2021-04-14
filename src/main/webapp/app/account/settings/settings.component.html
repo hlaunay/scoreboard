@@ -100,6 +100,19 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label class="form-control-label" for="team">Team</label>
+          <select
+            class="form-control"
+            id="team"
+            name="team"
+            formControlName="team"
+            data-cy="team">
+            <option value="undefined" disabled>Choose your team</option>
+            <option *ngFor="let team of teams" [ngValue]="team.id">{{ team.name }}</option>
+          </select>
+        </div>
+
         <button type="submit" [disabled]="settingsForm.invalid" class="btn btn-primary" data-cy="submit">Save</button>
       </form>
     </div>

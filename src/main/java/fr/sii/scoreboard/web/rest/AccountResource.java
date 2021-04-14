@@ -1,28 +1,33 @@
 package fr.sii.scoreboard.web.rest;
 
 import fr.sii.scoreboard.domain.PersistentToken;
+import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.PersistentTokenRepository;
+import fr.sii.scoreboard.repository.TeamRepository;
 import fr.sii.scoreboard.repository.UserRepository;
 import fr.sii.scoreboard.security.SecurityUtils;
 import fr.sii.scoreboard.service.MailService;
 import fr.sii.scoreboard.service.UserService;
 import fr.sii.scoreboard.service.dto.AdminUserDTO;
 import fr.sii.scoreboard.service.dto.PasswordChangeDTO;
-import fr.sii.scoreboard.service.dto.UserDTO;
-import fr.sii.scoreboard.web.rest.errors.*;
+import fr.sii.scoreboard.web.rest.errors.EmailAlreadyUsedException;
+import fr.sii.scoreboard.web.rest.errors.InvalidPasswordException;
+import fr.sii.scoreboard.web.rest.errors.LoginAlreadyUsedException;
 import fr.sii.scoreboard.web.rest.vm.KeyAndPasswordVM;
 import fr.sii.scoreboard.web.rest.vm.ManagedUserVM;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for managing the current user's account.
@@ -42,6 +47,8 @@ public class AccountResource {
 
     private final UserRepository userRepository;
 
+    private final TeamRepository teamRepository;
+
     private final UserService userService;
 
     private final MailService mailService;
@@ -50,11 +57,13 @@ public class AccountResource {
 
     public AccountResource(
         UserRepository userRepository,
+        TeamRepository teamRepository,
         UserService userService,
         MailService mailService,
         PersistentTokenRepository persistentTokenRepository
     ) {
         this.userRepository = userRepository;
+        this.teamRepository = teamRepository;
         this.userService = userService;
         this.mailService = mailService;
         this.persistentTokenRepository = persistentTokenRepository;
@@ -138,12 +147,16 @@ public class AccountResource {
         if (!user.isPresent()) {
             throw new AccountResourceException("User could not be found");
         }
+
+        Team team = teamRepository.findById(userDTO.getTeam().getId()).orElse(null);
+
         userService.updateUser(
             userDTO.getFirstName(),
             userDTO.getLastName(),
             userDTO.getEmail(),
             userDTO.getLangKey(),
-            userDTO.getImageUrl()
+            userDTO.getImageUrl(),
+            team
         );
     }
 

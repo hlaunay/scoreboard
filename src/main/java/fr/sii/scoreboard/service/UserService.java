@@ -2,6 +2,7 @@ package fr.sii.scoreboard.service;
 
 import fr.sii.scoreboard.config.Constants;
 import fr.sii.scoreboard.domain.Authority;
+import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.AuthorityRepository;
 import fr.sii.scoreboard.repository.PersistentTokenRepository;
@@ -10,11 +11,6 @@ import fr.sii.scoreboard.security.AuthoritiesConstants;
 import fr.sii.scoreboard.security.SecurityUtils;
 import fr.sii.scoreboard.service.dto.AdminUserDTO;
 import fr.sii.scoreboard.service.dto.UserDTO;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -24,6 +20,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.security.RandomUtil;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service class for managing users.
@@ -243,7 +248,7 @@ public class UserService {
      * @param langKey   language key.
      * @param imageUrl  image URL of user.
      */
-    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
+    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl, Team team) {
         SecurityUtils
             .getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
@@ -256,6 +261,7 @@ public class UserService {
                     }
                     user.setLangKey(langKey);
                     user.setImageUrl(imageUrl);
+                    user.setTeam(team);
                     log.debug("Changed Information for User: {}", user);
                 }
             );

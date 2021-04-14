@@ -1,8 +1,11 @@
 package fr.sii.scoreboard.service.dto;
 
+import fr.sii.scoreboard.domain.Team;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
-import javax.validation.constraints.*;
 
 /**
  * A DTO for the {@link fr.sii.scoreboard.domain.Team} entity.
@@ -29,6 +32,14 @@ public class TeamDTO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public TeamDTO() {
+    }
+
+    public TeamDTO(Team team) {
+        this.id = team.getId();
+        this.name = team.getName();
     }
 
     @Override
