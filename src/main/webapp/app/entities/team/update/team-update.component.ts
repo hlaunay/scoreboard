@@ -18,6 +18,7 @@ export class TeamUpdateComponent implements OnInit {
   editForm = this.fb.group({
     id: [],
     name: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+    password: [null, [Validators.required, Validators.minLength(60), Validators.maxLength(60)]],
   });
 
   constructor(protected teamService: TeamService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder) {}
@@ -65,6 +66,7 @@ export class TeamUpdateComponent implements OnInit {
     this.editForm.patchValue({
       id: team.id,
       name: team.name,
+      password: team.password,
     });
   }
 
@@ -73,6 +75,7 @@ export class TeamUpdateComponent implements OnInit {
       ...new Team(),
       id: this.editForm.get(['id'])!.value,
       name: this.editForm.get(['name'])!.value,
+      password: this.editForm.get(['password'])!.value,
     };
   }
 }

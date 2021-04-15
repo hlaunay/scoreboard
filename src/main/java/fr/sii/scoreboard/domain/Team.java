@@ -1,12 +1,11 @@
 package fr.sii.scoreboard.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
-import javax.validation.constraints.*;
 
 /**
  * A Team.
@@ -25,6 +24,11 @@ public class Team implements Serializable {
     @Size(min = 3, max = 50)
     @Column(name = "name", length = 50, nullable = false, unique = true)
     private String name;
+
+    @NotNull
+    @Size(min = 60, max = 60)
+    @Column(name = "password_hash", length = 60, nullable = false)
+    private String password;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "team")
     private Set<User> players = new HashSet<>();
@@ -56,9 +60,26 @@ public class Team implements Serializable {
         this.name = name;
     }
 
-    public Set<User> getPlayers() { return players; }
+    public Set<User> getPlayers() {
+        return players;
+    }
 
-    public void setPlayers(Set<User> players) { this.players = players; }
+    public void setPlayers(Set<User> players) {
+        this.players = players;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public Team password(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 

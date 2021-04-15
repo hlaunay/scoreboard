@@ -1,21 +1,10 @@
 package fr.sii.scoreboard.web.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import fr.sii.scoreboard.IntegrationTest;
 import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.repository.TeamRepository;
-import fr.sii.scoreboard.service.criteria.TeamCriteria;
 import fr.sii.scoreboard.service.dto.TeamDTO;
 import fr.sii.scoreboard.service.mapper.TeamMapper;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +13,17 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Integration tests for the {@link TeamResource} REST controller.
@@ -35,6 +35,9 @@ class TeamResourceIT {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
+
+    private static final String DEFAULT_PASSWORD = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+    private static final String UPDATED_PASSWORD = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/teams";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -63,7 +66,7 @@ class TeamResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Team createEntity(EntityManager em) {
-        Team team = new Team().name(DEFAULT_NAME);
+        Team team = new Team().name(DEFAULT_NAME).password(DEFAULT_PASSWORD);
         return team;
     }
 
@@ -74,7 +77,7 @@ class TeamResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Team createUpdatedEntity(EntityManager em) {
-        Team team = new Team().name(UPDATED_NAME);
+        Team team = new Team().name(UPDATED_NAME).password(UPDATED_PASSWORD);
         return team;
     }
 
@@ -103,6 +106,7 @@ class TeamResourceIT {
         assertThat(teamList).hasSize(databaseSizeBeforeCreate + 1);
         Team testTeam = teamList.get(teamList.size() - 1);
         assertThat(testTeam.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testTeam.getPassword()).isEqualTo(DEFAULT_PASSWORD);
     }
 
     @Test
@@ -154,6 +158,29 @@ class TeamResourceIT {
 
     @Test
     @Transactional
+    void checkPasswordIsRequired() throws Exception {
+        int databaseSizeBeforeTest = teamRepository.findAll().size();
+        // set the field null
+        team.setPassword(null);
+
+        // Create the Team, which fails.
+        TeamDTO teamDTO = teamMapper.toDto(team);
+
+        restTeamMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(teamDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        List<Team> teamList = teamRepository.findAll();
+        assertThat(teamList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllTeams() throws Exception {
         // Initialize the database
         teamRepository.saveAndFlush(team);
@@ -164,7 +191,8 @@ class TeamResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(team.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].password").value(hasItem(DEFAULT_PASSWORD)));
     }
 
     @Test
@@ -179,7 +207,8 @@ class TeamResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(team.getId().intValue()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME));
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
+            .andExpect(jsonPath("$.password").value(DEFAULT_PASSWORD));
     }
 
     @Test
@@ -278,6 +307,84 @@ class TeamResourceIT {
         defaultTeamShouldBeFound("name.doesNotContain=" + UPDATED_NAME);
     }
 
+    @Test
+    @Transactional
+    void getAllTeamsByPasswordIsEqualToSomething() throws Exception {
+        // Initialize the database
+        teamRepository.saveAndFlush(team);
+
+        // Get all the teamList where password equals to DEFAULT_PASSWORD
+        defaultTeamShouldBeFound("password.equals=" + DEFAULT_PASSWORD);
+
+        // Get all the teamList where password equals to UPDATED_PASSWORD
+        defaultTeamShouldNotBeFound("password.equals=" + UPDATED_PASSWORD);
+    }
+
+    @Test
+    @Transactional
+    void getAllTeamsByPasswordIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        teamRepository.saveAndFlush(team);
+
+        // Get all the teamList where password not equals to DEFAULT_PASSWORD
+        defaultTeamShouldNotBeFound("password.notEquals=" + DEFAULT_PASSWORD);
+
+        // Get all the teamList where password not equals to UPDATED_PASSWORD
+        defaultTeamShouldBeFound("password.notEquals=" + UPDATED_PASSWORD);
+    }
+
+    @Test
+    @Transactional
+    void getAllTeamsByPasswordIsInShouldWork() throws Exception {
+        // Initialize the database
+        teamRepository.saveAndFlush(team);
+
+        // Get all the teamList where password in DEFAULT_PASSWORD or UPDATED_PASSWORD
+        defaultTeamShouldBeFound("password.in=" + DEFAULT_PASSWORD + "," + UPDATED_PASSWORD);
+
+        // Get all the teamList where password equals to UPDATED_PASSWORD
+        defaultTeamShouldNotBeFound("password.in=" + UPDATED_PASSWORD);
+    }
+
+    @Test
+    @Transactional
+    void getAllTeamsByPasswordIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        teamRepository.saveAndFlush(team);
+
+        // Get all the teamList where password is not null
+        defaultTeamShouldBeFound("password.specified=true");
+
+        // Get all the teamList where password is null
+        defaultTeamShouldNotBeFound("password.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllTeamsByPasswordContainsSomething() throws Exception {
+        // Initialize the database
+        teamRepository.saveAndFlush(team);
+
+        // Get all the teamList where password contains DEFAULT_PASSWORD
+        defaultTeamShouldBeFound("password.contains=" + DEFAULT_PASSWORD);
+
+        // Get all the teamList where password contains UPDATED_PASSWORD
+        defaultTeamShouldNotBeFound("password.contains=" + UPDATED_PASSWORD);
+    }
+
+    @Test
+    @Transactional
+    void getAllTeamsByPasswordNotContainsSomething() throws Exception {
+        // Initialize the database
+        teamRepository.saveAndFlush(team);
+
+        // Get all the teamList where password does not contain DEFAULT_PASSWORD
+        defaultTeamShouldNotBeFound("password.doesNotContain=" + DEFAULT_PASSWORD);
+
+        // Get all the teamList where password does not contain UPDATED_PASSWORD
+        defaultTeamShouldBeFound("password.doesNotContain=" + UPDATED_PASSWORD);
+    }
+
     /**
      * Executes the search, and checks that the default entity is returned.
      */
@@ -287,7 +394,8 @@ class TeamResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(team.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].password").value(hasItem(DEFAULT_PASSWORD)));
 
         // Check, that the count call also returns 1
         restTeamMockMvc
@@ -335,7 +443,7 @@ class TeamResourceIT {
         Team updatedTeam = teamRepository.findById(team.getId()).get();
         // Disconnect from session so that the updates on updatedTeam are not directly saved in db
         em.detach(updatedTeam);
-        updatedTeam.name(UPDATED_NAME);
+        updatedTeam.name(UPDATED_NAME).password(UPDATED_PASSWORD);
         TeamDTO teamDTO = teamMapper.toDto(updatedTeam);
 
         restTeamMockMvc
@@ -352,6 +460,7 @@ class TeamResourceIT {
         assertThat(teamList).hasSize(databaseSizeBeforeUpdate);
         Team testTeam = teamList.get(teamList.size() - 1);
         assertThat(testTeam.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testTeam.getPassword()).isEqualTo(UPDATED_PASSWORD);
     }
 
     @Test
@@ -435,6 +544,8 @@ class TeamResourceIT {
         Team partialUpdatedTeam = new Team();
         partialUpdatedTeam.setId(team.getId());
 
+        partialUpdatedTeam.password(UPDATED_PASSWORD);
+
         restTeamMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedTeam.getId())
@@ -449,6 +560,7 @@ class TeamResourceIT {
         assertThat(teamList).hasSize(databaseSizeBeforeUpdate);
         Team testTeam = teamList.get(teamList.size() - 1);
         assertThat(testTeam.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testTeam.getPassword()).isEqualTo(UPDATED_PASSWORD);
     }
 
     @Test
@@ -463,7 +575,7 @@ class TeamResourceIT {
         Team partialUpdatedTeam = new Team();
         partialUpdatedTeam.setId(team.getId());
 
-        partialUpdatedTeam.name(UPDATED_NAME);
+        partialUpdatedTeam.name(UPDATED_NAME).password(UPDATED_PASSWORD);
 
         restTeamMockMvc
             .perform(
@@ -479,6 +591,7 @@ class TeamResourceIT {
         assertThat(teamList).hasSize(databaseSizeBeforeUpdate);
         Team testTeam = teamList.get(teamList.size() - 1);
         assertThat(testTeam.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testTeam.getPassword()).isEqualTo(UPDATED_PASSWORD);
     }
 
     @Test

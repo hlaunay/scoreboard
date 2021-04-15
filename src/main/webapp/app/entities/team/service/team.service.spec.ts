@@ -23,6 +23,7 @@ describe('Service Tests', () => {
       elemDefault = {
         id: 0,
         name: 'AAAAAAA',
+        password: 'AAAAAAA',
       };
     });
 
@@ -59,6 +60,7 @@ describe('Service Tests', () => {
           {
             id: 1,
             name: 'BBBBBB',
+            password: 'BBBBBB',
           },
           elemDefault
         );
@@ -73,7 +75,12 @@ describe('Service Tests', () => {
       });
 
       it('should partial update a Team', () => {
-        const patchObject = Object.assign({}, new Team());
+        const patchObject = Object.assign(
+          {
+            password: 'BBBBBB',
+          },
+          new Team()
+        );
 
         const returnedFromService = Object.assign(patchObject, elemDefault);
 
@@ -91,6 +98,7 @@ describe('Service Tests', () => {
           {
             id: 1,
             name: 'BBBBBB',
+            password: 'BBBBBB',
           },
           elemDefault
         );
@@ -142,7 +150,7 @@ describe('Service Tests', () => {
         });
 
         it('should add only unique Team to an array', () => {
-          const teamArray: ITeam[] = [{ id: 123 }, { id: 456 }, { id: 54896 }];
+          const teamArray: ITeam[] = [{ id: 123 }, { id: 456 }, { id: 65044 }];
           const teamCollection: ITeam[] = [{ id: 123 }];
           expectedResult = service.addTeamToCollectionIfMissing(teamCollection, ...teamArray);
           expect(expectedResult).toHaveLength(3);

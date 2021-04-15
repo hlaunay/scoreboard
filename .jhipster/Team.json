@@ -3,9 +3,25 @@
     {
       "fieldName": "name",
       "fieldType": "String",
-      "fieldValidateRules": ["required", "unique", "minlength", "maxlength"],
+      "fieldValidateRules": [
+        "required",
+        "unique",
+        "minlength",
+        "maxlength"
+      ],
       "fieldValidateRulesMinlength": "3",
       "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "fieldName": "password",
+      "fieldType": "String",
+      "fieldValidateRules": [
+        "required",
+        "minlength",
+        "maxlength"
+      ],
+      "fieldValidateRulesMinlength": "60",
+      "fieldValidateRulesMaxlength": "60"
     }
   ],
   "relationships": [],

@@ -18,6 +18,18 @@ public class TeamDTO implements Serializable {
     @Size(min = 3, max = 50)
     private String name;
 
+    @NotNull
+    @Size(min = 60, max = 60)
+    private String password;
+
+    public TeamDTO() {
+    }
+
+    public TeamDTO(Team team) {
+        this.id = team.getId();
+        this.name = team.getName();
+    }
+
     public Long getId() {
         return id;
     }
@@ -34,12 +46,12 @@ public class TeamDTO implements Serializable {
         this.name = name;
     }
 
-    public TeamDTO() {
+    public String getPassword() {
+        return password;
     }
 
-    public TeamDTO(Team team) {
-        this.id = team.getId();
-        this.name = team.getName();
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
@@ -69,6 +81,7 @@ public class TeamDTO implements Serializable {
         return "TeamDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", password='" + getPassword() + "'" +
             "}";
     }
 }

@@ -7,7 +7,7 @@ import { passwordResetInitRoute } from './password-reset/init/password-reset-ini
 import { registerRoute } from './register/register.route';
 import { sessionsRoute } from './sessions/sessions.route';
 import { settingsRoute } from './settings/settings.route';
-import { teamRoute } from './team/team.route';
+import { teamRoute } from './team-join/team-join.route';
 
 const ACCOUNT_ROUTES = [
   activateRoute,

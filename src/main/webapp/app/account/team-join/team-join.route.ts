@@ -1,11 +1,11 @@
 import { Route } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { TeamComponent } from './team.component';
+import { TeamJoinComponent } from './team-join.component';
 
 export const teamRoute: Route = {
-  path: 'team',
-  component: TeamComponent,
+  path: 'team-join',
+  component: TeamJoinComponent,
   data: {
     pageTitle: 'Team',
     teamManagement: true,
