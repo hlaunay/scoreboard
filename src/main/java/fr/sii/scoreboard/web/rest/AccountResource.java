@@ -1,10 +1,8 @@
 package fr.sii.scoreboard.web.rest;
 
 import fr.sii.scoreboard.domain.PersistentToken;
-import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.PersistentTokenRepository;
-import fr.sii.scoreboard.repository.TeamRepository;
 import fr.sii.scoreboard.repository.UserRepository;
 import fr.sii.scoreboard.security.SecurityUtils;
 import fr.sii.scoreboard.service.MailService;
@@ -47,8 +45,6 @@ public class AccountResource {
 
     private final UserRepository userRepository;
 
-    private final TeamRepository teamRepository;
-
     private final UserService userService;
 
     private final MailService mailService;
@@ -57,13 +53,11 @@ public class AccountResource {
 
     public AccountResource(
         UserRepository userRepository,
-        TeamRepository teamRepository,
         UserService userService,
         MailService mailService,
         PersistentTokenRepository persistentTokenRepository
     ) {
         this.userRepository = userRepository;
-        this.teamRepository = teamRepository;
         this.userService = userService;
         this.mailService = mailService;
         this.persistentTokenRepository = persistentTokenRepository;
@@ -148,15 +142,12 @@ public class AccountResource {
             throw new AccountResourceException("User could not be found");
         }
 
-        Team team = teamRepository.findById(userDTO.getTeam().getId()).orElse(null);
-
         userService.updateUser(
             userDTO.getFirstName(),
             userDTO.getLastName(),
             userDTO.getEmail(),
             userDTO.getLangKey(),
-            userDTO.getImageUrl(),
-            team
+            userDTO.getImageUrl()
         );
     }
 

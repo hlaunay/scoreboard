@@ -2,7 +2,6 @@ package fr.sii.scoreboard.service;
 
 import fr.sii.scoreboard.config.Constants;
 import fr.sii.scoreboard.domain.Authority;
-import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.AuthorityRepository;
 import fr.sii.scoreboard.repository.PersistentTokenRepository;
@@ -248,7 +247,7 @@ public class UserService {
      * @param langKey   language key.
      * @param imageUrl  image URL of user.
      */
-    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl, Team team) {
+    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
         SecurityUtils
             .getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
@@ -261,7 +260,6 @@ public class UserService {
                     }
                     user.setLangKey(langKey);
                     user.setImageUrl(imageUrl);
-                    user.setTeam(team);
                     log.debug("Changed Information for User: {}", user);
                 }
             );
