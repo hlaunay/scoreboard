@@ -135,9 +135,17 @@
         </a>
         <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
           <li *ngSwitchCase="true">
-            <a class="dropdown-item" routerLink="account/settings" routerLinkActive="active" (click)="collapseNavbar()" data-cy="settings">
+            <a class="dropdown-item" routerLink="account/settings" routerLinkActive="active" (click)="collapseNavbar()"
+               data-cy="settings">
               <fa-icon icon="wrench" [fixedWidth]="true"></fa-icon>
               <span>Settings</span>
+            </a>
+          </li>
+          <li *ngIf="canJoinTeam()">
+            <a class="dropdown-item" routerLink="account/team" routerLinkActive="active" (click)="collapseNavbar()"
+               data-cy="accountTeam">
+              <fa-icon icon="user-friends" [fixedWidth]="true"></fa-icon>
+              <span>Team</span>
             </a>
           </li>
           <li *ngSwitchCase="true">

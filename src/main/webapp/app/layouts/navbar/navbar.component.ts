@@ -43,6 +43,10 @@ export class NavbarComponent implements OnInit {
     return this.accountService.isAuthenticated();
   }
 
+  canJoinTeam(): boolean {
+    return this.accountService.canJoinTeam();
+  }
+
   login(): void {
     this.router.navigate(['/login']);
   }

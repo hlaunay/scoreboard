@@ -8,6 +8,7 @@ import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { ApplicationConfigService } from '../config/application-config.service';
 import { Account } from 'app/core/auth/account.model';
 import { TrackerService } from '../tracker/tracker.service';
+import { Authority } from 'app/config/authority.constants';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -66,6 +67,18 @@ export class AccountService {
 
   isAuthenticated(): boolean {
     return this.userIdentity !== null;
+  }
+
+  canJoinTeam(): boolean {
+    if (!this.userIdentity) {
+      return false;
+    }
+
+    if(this.hasAnyAuthority(Authority.ADMIN)) {
+      return false;
+    }
+
+    return this.userIdentity.team === null;
   }
 
   getAuthenticationState(): Observable<Account | null> {
