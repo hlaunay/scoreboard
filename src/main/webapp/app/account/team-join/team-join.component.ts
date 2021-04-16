@@ -1,81 +1,68 @@
-import { Component, OnInit } from '@angular/core';
+import { Component   } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
-import { ITeam, Team } from 'app/entities/team/team.model';
-import { TeamService } from 'app/entities/team/service/team.service';
+import { TeamJoinService } from './team-join.service';
+import { TeamCreate } from './team-join.model';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
     selector: 'jhi-team-join',
     templateUrl: './team-join.component.html',
   })
-  export class TeamJoinComponent implements OnInit {
+  export class TeamJoinComponent {
     isSaving = false;
 
-    editForm = this.fb.group({
+    createForm = this.fb.group({
+      name: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      password: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
+    });
+
+    joinForm = this.fb.group({
       id: [],
       name: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-      password: [null, [Validators.required, Validators.minLength(60), Validators.maxLength(60)]],
+      password: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
     });
   
-    constructor(protected teamService: TeamService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder) {}
+    constructor(protected teamJoinService: TeamJoinService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder, private router: Router, private accountService: AccountService) {}
   
-    ngOnInit(): void {
-      this.activatedRoute.data.subscribe(({ team }) => {
-        this.updateForm(team);
-      });
-    }
-  
-    previousState(): void {
-      window.history.back();
-    }
-  
-    save(): void {
+    create(): void {
       this.isSaving = true;
       const team = this.createFromForm();
-      if (team.id !== undefined) {
-        this.subscribeToSaveResponse(this.teamService.update(team));
-      } else {
-        this.subscribeToSaveResponse(this.teamService.create(team));
-      }
+      this.subscribeToCreateResponse(this.teamJoinService.create(team));
+    }
+
+    join(): void {
+      // TODO
     }
   
-    protected subscribeToSaveResponse(result: Observable<HttpResponse<ITeam>>): void {
-      result.pipe(finalize(() => this.onSaveFinalize())).subscribe(
-        () => this.onSaveSuccess(),
-        () => this.onSaveError()
+    protected subscribeToCreateResponse(result: Observable<HttpResponse<{}>>): void {
+      result.pipe(finalize(() => this.onFinalize())).subscribe(
+        () => this.onSuccess(),
+        () => this.onError()
       );
     }
   
-    protected onSaveSuccess(): void {
-      this.previousState();
+    protected onSuccess(): void {
+      this.accountService.identity(true).subscribe(() => {this.router.navigate(['']); return;});
     }
   
-    protected onSaveError(): void {
+    protected onError(): void {
       // Api for inheritance.
     }
   
-    protected onSaveFinalize(): void {
+    protected onFinalize(): void {
       this.isSaving = false;
     }
   
-    protected updateForm(team: ITeam): void {
-      this.editForm.patchValue({
-        id: team.id,
-        name: team.name,
-        password: team.password,
-      });
+    protected createFromForm(): TeamCreate {
+      return new TeamCreate(
+        this.createForm.get(['name'])!.value, 
+        this.createForm.get(['password'])!.value
+      );
     }
-  
-    protected createFromForm(): ITeam {
-      return {
-        ...new Team(),
-        id: this.editForm.get(['id'])!.value,
-        name: this.editForm.get(['name'])!.value,
-        password: this.editForm.get(['password'])!.value,
-      };
-    }
+
   } 

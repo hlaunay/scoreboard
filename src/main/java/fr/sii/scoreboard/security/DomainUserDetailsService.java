@@ -2,8 +2,6 @@ package fr.sii.scoreboard.security;
 
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.UserRepository;
-import java.util.*;
-import java.util.stream.Collectors;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +12,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Authenticate a user from the database.
@@ -57,6 +59,11 @@ public class DomainUserDetailsService implements UserDetailsService {
             .stream()
             .map(authority -> new SimpleGrantedAuthority(authority.getName()))
             .collect(Collectors.toList());
+
+        if (user.getTeam() == null && !user.getAuthorities().contains(AuthoritiesConstants.ADMIN)) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.NO_TEAM));
+        }
+
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), grantedAuthorities);
     }
 }

@@ -2,6 +2,7 @@ package fr.sii.scoreboard.service;
 
 import fr.sii.scoreboard.config.Constants;
 import fr.sii.scoreboard.domain.Authority;
+import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.AuthorityRepository;
 import fr.sii.scoreboard.repository.PersistentTokenRepository;
@@ -220,11 +221,17 @@ public class UserService {
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .forEach(managedAuthorities::add);
+                    userRepository.save(user);
                     log.debug("Changed Information for User: {}", user);
                     return user;
                 }
             )
             .map(AdminUserDTO::new);
+    }
+
+    public void joinTeam(User user, Team team) {
+        user.setTeam(team);
+        userRepository.save(user);
     }
 
     public void deleteUser(String login) {

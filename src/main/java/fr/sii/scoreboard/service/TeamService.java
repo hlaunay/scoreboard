@@ -2,15 +2,18 @@ package fr.sii.scoreboard.service;
 
 import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.repository.TeamRepository;
+import fr.sii.scoreboard.service.dto.TeamCreateDTO;
 import fr.sii.scoreboard.service.dto.TeamDTO;
 import fr.sii.scoreboard.service.mapper.TeamMapper;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Team}.
@@ -25,9 +28,12 @@ public class TeamService {
 
     private final TeamMapper teamMapper;
 
-    public TeamService(TeamRepository teamRepository, TeamMapper teamMapper) {
+    private final PasswordEncoder passwordEncoder;
+
+    public TeamService(TeamRepository teamRepository, TeamMapper teamMapper, PasswordEncoder passwordEncoder) {
         this.teamRepository = teamRepository;
         this.teamMapper = teamMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -36,32 +42,13 @@ public class TeamService {
      * @param teamDTO the entity to save.
      * @return the persisted entity.
      */
-    public TeamDTO save(TeamDTO teamDTO) {
+    public Team save(TeamCreateDTO teamDTO) {
         log.debug("Request to save Team : {}", teamDTO);
-        Team team = teamMapper.toEntity(teamDTO);
+        Team team = new Team();
+        team.setName(teamDTO.getName());
+        team.password(passwordEncoder.encode(teamDTO.getPassword()));
         team = teamRepository.save(team);
-        return teamMapper.toDto(team);
-    }
-
-    /**
-     * Partially update a team.
-     *
-     * @param teamDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    public Optional<TeamDTO> partialUpdate(TeamDTO teamDTO) {
-        log.debug("Request to partially update Team : {}", teamDTO);
-
-        return teamRepository
-            .findById(teamDTO.getId())
-            .map(
-                existingTeam -> {
-                    teamMapper.partialUpdate(existingTeam, teamDTO);
-                    return existingTeam;
-                }
-            )
-            .map(teamRepository::save)
-            .map(teamMapper::toDto);
+        return team;
     }
 
     /**

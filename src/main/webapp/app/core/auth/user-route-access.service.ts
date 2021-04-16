@@ -15,15 +15,8 @@ export class UserRouteAccessService implements CanActivate {
       map(account => {
         if (account) {
           const authorities = route.data['authorities'];
-          const teamManagement = route.data['teamManagement'];
 
           if (!authorities || authorities.length === 0 || this.accountService.hasAnyAuthority(authorities)) {
-
-            if(teamManagement  && !this.accountService.canJoinTeam()) {
-              this.router.navigate(['accessdenied']);
-              return false;
-            }
-
             return true;
           }
 

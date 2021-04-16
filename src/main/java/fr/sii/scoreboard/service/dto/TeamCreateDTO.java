@@ -8,31 +8,18 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * A DTO for the {@link fr.sii.scoreboard.domain.Team} entity.
+ * A DTO for the {@link Team} entity.
  */
-public class TeamDTO implements Serializable {
-
-    private Long id;
+public class TeamCreateDTO implements Serializable {
 
     @NotNull
     @Size(min = 3, max = 50)
     private String name;
 
-    public TeamDTO() {
-    }
+    @NotNull
+    @Size(min = 4, max = 50)
+    private String password;
 
-    public TeamDTO(Team team) {
-        this.id = team.getId();
-        this.name = team.getName();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -42,32 +29,39 @@ public class TeamDTO implements Serializable {
         this.name = name;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TeamDTO)) {
+        if (!(o instanceof TeamCreateDTO)) {
             return false;
         }
 
-        TeamDTO teamDTO = (TeamDTO) o;
-        if (this.id == null) {
+        TeamCreateDTO teamDTO = (TeamCreateDTO) o;
+        if (this.name == null) {
             return false;
         }
-        return Objects.equals(this.id, teamDTO.id);
+        return Objects.equals(this.name, teamDTO.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id);
+        return Objects.hash(this.name);
     }
 
     // prettier-ignore
     @Override
     public String toString() {
         return "TeamDTO{" +
-            "id=" + getId() +
             ", name='" + getName() + "'" +
             "}";
     }

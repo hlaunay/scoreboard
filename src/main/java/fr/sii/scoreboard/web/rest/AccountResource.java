@@ -1,14 +1,18 @@
 package fr.sii.scoreboard.web.rest;
 
 import fr.sii.scoreboard.domain.PersistentToken;
+import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.PersistentTokenRepository;
 import fr.sii.scoreboard.repository.UserRepository;
+import fr.sii.scoreboard.security.AuthoritiesConstants;
 import fr.sii.scoreboard.security.SecurityUtils;
 import fr.sii.scoreboard.service.MailService;
+import fr.sii.scoreboard.service.TeamService;
 import fr.sii.scoreboard.service.UserService;
 import fr.sii.scoreboard.service.dto.AdminUserDTO;
 import fr.sii.scoreboard.service.dto.PasswordChangeDTO;
+import fr.sii.scoreboard.service.dto.TeamCreateDTO;
 import fr.sii.scoreboard.web.rest.errors.EmailAlreadyUsedException;
 import fr.sii.scoreboard.web.rest.errors.InvalidPasswordException;
 import fr.sii.scoreboard.web.rest.errors.LoginAlreadyUsedException;
@@ -17,12 +21,16 @@ import fr.sii.scoreboard.web.rest.vm.ManagedUserVM;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.jhipster.web.util.HeaderUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Optional;
@@ -41,11 +49,16 @@ public class AccountResource {
         }
     }
 
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
     private final Logger log = LoggerFactory.getLogger(AccountResource.class);
 
     private final UserRepository userRepository;
 
     private final UserService userService;
+
+    private final TeamService teamService;
 
     private final MailService mailService;
 
@@ -54,11 +67,13 @@ public class AccountResource {
     public AccountResource(
         UserRepository userRepository,
         UserService userService,
+        TeamService teamService,
         MailService mailService,
         PersistentTokenRepository persistentTokenRepository
     ) {
         this.userRepository = userRepository;
         this.userService = userService;
+        this.teamService = teamService;
         this.mailService = mailService;
         this.persistentTokenRepository = persistentTokenRepository;
     }
@@ -118,6 +133,13 @@ public class AccountResource {
         return userService
             .getUserWithAuthorities()
             .map(AdminUserDTO::new)
+            .map(adminUserDTO -> {
+                if (adminUserDTO.getTeam() == null && !adminUserDTO.getAuthorities().contains(AuthoritiesConstants.ADMIN)) {
+                    adminUserDTO.getAuthorities().add(AuthoritiesConstants.NO_TEAM);
+                }
+
+                return adminUserDTO;
+            })
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
     }
 
@@ -254,8 +276,21 @@ public class AccountResource {
     private static boolean isPasswordLengthInvalid(String password) {
         return (
             StringUtils.isEmpty(password) ||
-            password.length() < ManagedUserVM.PASSWORD_MIN_LENGTH ||
-            password.length() > ManagedUserVM.PASSWORD_MAX_LENGTH
+                password.length() < ManagedUserVM.PASSWORD_MIN_LENGTH ||
+                password.length() > ManagedUserVM.PASSWORD_MAX_LENGTH
         );
+    }
+
+    @PostMapping(path = "/account/team/create")
+    public ResponseEntity<Void> createTeam(@Valid @RequestBody TeamCreateDTO teamDTO) throws URISyntaxException {
+        log.debug("REST request to save Team : {}", teamDTO);
+        User user = userService.getUserWithAuthorities().orElseThrow(() -> new AccountResourceException("User could not be found"));
+        Team team = teamService.save(teamDTO);
+        userService.joinTeam(user, team);
+
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createAlert(applicationName, "A user is updated with identifier " + user.getLogin(), user.getLogin()))
+            .build();
     }
 }
