@@ -1,11 +1,14 @@
+<div class="row">
+  <div class="col">
+    <jhi-alert-error></jhi-alert-error>
+  </div>
+</div>
 <div class="row justify-content-around">
   <div class="col col-md-4">
     <form name="createForm" role="form" novalidate (ngSubmit)="create()" [formGroup]="createForm">
       <h2 id="jhi-team-heading" data-cy="TeamCreateUpdateHeading">Create a Team</h2>
 
       <div>
-        <jhi-alert-error></jhi-alert-error>
-
         <div class="form-group">
           <label class="form-control-label" for="field_name">Name</label>
           <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name"/>
@@ -104,8 +107,6 @@
       <h2 id="jhi-team-heading" data-cy="TeamCreateUpdateHeading">Join a Team</h2>
 
       <div>
-        <jhi-alert-error></jhi-alert-error>
-
         <div class="form-group">
           <label class="form-control-label" for="field_name">Name</label>
           <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name"/>

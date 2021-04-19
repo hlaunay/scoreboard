@@ -19,6 +19,7 @@ import { AccountService } from 'app/core/auth/account.service';
     createForm = this.fb.group({
       name: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       password: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
+      confirmPassword: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
     });
 
     joinForm = this.fb.group({
