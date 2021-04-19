@@ -14,6 +14,7 @@ import { AccountService } from 'app/core/auth/account.service';
     templateUrl: './team-join.component.html',
   })
   export class TeamJoinComponent {
+    doNotMatch = false;
     isSaving = false;
 
     createForm = this.fb.group({
@@ -31,6 +32,14 @@ import { AccountService } from 'app/core/auth/account.service';
     constructor(protected teamJoinService: TeamJoinService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder, private router: Router, private accountService: AccountService) {}
   
     create(): void {
+      this.doNotMatch = false;
+      
+      const newPassword = this.createForm.get(['password'])!.value;
+      if(newPassword !== this.createForm.get(['confirmPassword'])!.value) {
+        this.doNotMatch = true;
+        return;
+      }
+
       this.isSaving = true;
       const team = this.createFromForm();
       this.subscribeToCreateResponse(this.teamJoinService.create(team));
