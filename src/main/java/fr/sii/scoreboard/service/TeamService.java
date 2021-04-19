@@ -44,6 +44,11 @@ public class TeamService {
      */
     public Team save(TeamCreateDTO teamDTO) {
         log.debug("Request to save Team : {}", teamDTO);
+
+        teamRepository.findByName(teamDTO.getName()).ifPresent(team -> {
+            throw new TeamAlreadyExistsException();
+        });
+
         Team team = new Team();
         team.setName(teamDTO.getName());
         team.password(passwordEncoder.encode(teamDTO.getPassword()));
