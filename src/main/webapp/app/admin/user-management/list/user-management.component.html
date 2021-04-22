@@ -26,6 +26,7 @@
           <th scope="col" jhiSortBy="email"><span>Email</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col"></th>
           <th scope="col"><span>Profiles</span></th>
+          <th scope="col"><span>Team</span></th>
           <th scope="col" jhiSortBy="createdDate"><span>Created Date</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" jhiSortBy="lastModifiedBy"><span>Last Modified By</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" jhiSortBy="lastModifiedDate"><span>Last Modified Date</span> <fa-icon icon="sort"></fa-icon></th>
@@ -55,6 +56,7 @@
               <span class="badge badge-info">{{ authority }}</span>
             </div>
           </td>
+          <td>{{ user.team?.name }}</td>
           <td>{{ user.createdDate | date: 'dd/MM/yy HH:mm' }}</td>
           <td>{{ user.lastModifiedBy }}</td>
           <td>{{ user.lastModifiedDate | date: 'dd/MM/yy HH:mm' }}</td>

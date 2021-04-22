@@ -1,3 +1,5 @@
+import { ITeam } from "app/entities/team/team.model";
+
 export interface IUser {
   id?: number;
   login?: string;
@@ -11,6 +13,7 @@ export interface IUser {
   createdDate?: Date;
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
+  team?: ITeam
 }
 
 export class User implements IUser {
@@ -26,6 +29,7 @@ export class User implements IUser {
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,
-    public lastModifiedDate?: Date
+    public lastModifiedDate?: Date,
+    public team?: ITeam
   ) {}
 }

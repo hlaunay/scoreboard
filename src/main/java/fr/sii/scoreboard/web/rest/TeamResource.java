@@ -1,12 +1,9 @@
 package fr.sii.scoreboard.web.rest;
 
-import fr.sii.scoreboard.repository.TeamRepository;
 import fr.sii.scoreboard.service.TeamQueryService;
 import fr.sii.scoreboard.service.TeamService;
 import fr.sii.scoreboard.service.criteria.TeamCriteria;
 import fr.sii.scoreboard.service.dto.TeamDTO;
-import fr.sii.scoreboard.service.dto.TeamJoinDTO;
-import fr.sii.scoreboard.service.mapper.TeamMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +17,6 @@ import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,34 +36,11 @@ public class TeamResource {
 
     private final TeamService teamService;
 
-    private final TeamMapper teamMapper;
-
-    private final TeamRepository teamRepository;
-
     private final TeamQueryService teamQueryService;
 
-    public TeamResource(TeamService teamService, TeamMapper teamMapper, TeamRepository teamRepository, TeamQueryService teamQueryService) {
+    public TeamResource(TeamService teamService, TeamQueryService teamQueryService) {
         this.teamService = teamService;
-        this.teamMapper = teamMapper;
-        this.teamRepository = teamRepository;
         this.teamQueryService = teamQueryService;
-    }
-
-    /**
-     * {@code POST  /teams} : Create a new team.
-     *
-     * @param teamDTO the teamDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new teamDTO, or with status {@code 400 (Bad Request)} if the team has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PostMapping("/teams")
-    public ResponseEntity<TeamDTO> createTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
-        log.debug("REST request to save Team : {}", teamDTO);
-        TeamDTO result = teamMapper.toDto(teamService.save(teamDTO));
-        return ResponseEntity
-            .created(new URI("/api/teams/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
     }
 
     /**
