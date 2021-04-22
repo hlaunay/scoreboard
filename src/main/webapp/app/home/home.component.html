@@ -4,6 +4,13 @@
   </div>
 
   <div class="col-md-9">
+
+    <div class="alert alert-warning" *jhiHasAnyAuthority="'ROLE_NO_TEAM'">
+      <span>You are not on a team yet.</span>&nbsp;
+      <a class="alert-link" routerLink="account/team-join">Please join or create a team</a>&nbsp;
+      <span>to start the challenges</span>
+    </div>
+
     <h1 class="display-4">Welcome, Java Hipster!</h1>
 
     <p class="lead">This is your homepage</p>
