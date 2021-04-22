@@ -1,5 +1,6 @@
 package fr.sii.scoreboard.web.rest;
 
+import fr.sii.scoreboard.security.AuthoritiesConstants;
 import fr.sii.scoreboard.service.TeamQueryService;
 import fr.sii.scoreboard.service.TeamService;
 import fr.sii.scoreboard.service.criteria.TeamCriteria;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -51,6 +53,7 @@ public class TeamResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of teams in body.
      */
     @GetMapping("/teams")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<List<TeamDTO>> getAllTeams(TeamCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Teams by criteria: {}", criteria);
         Page<TeamDTO> page = teamQueryService.findByCriteria(criteria, pageable);
@@ -65,6 +68,7 @@ public class TeamResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
      */
     @GetMapping("/teams/count")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Long> countTeams(TeamCriteria criteria) {
         log.debug("REST request to count Teams by criteria: {}", criteria);
         return ResponseEntity.ok().body(teamQueryService.countByCriteria(criteria));
@@ -77,6 +81,7 @@ public class TeamResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the teamDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/teams/{id}")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<TeamDTO> getTeam(@PathVariable Long id) {
         log.debug("REST request to get Team : {}", id);
         Optional<TeamDTO> teamDTO = teamService.findOne(id);
@@ -90,6 +95,7 @@ public class TeamResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/teams/{id}")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
         log.debug("REST request to delete Team : {}", id);
         teamService.delete(id);

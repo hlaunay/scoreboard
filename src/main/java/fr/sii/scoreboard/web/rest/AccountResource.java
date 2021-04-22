@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 
@@ -282,6 +283,7 @@ public class AccountResource {
     }
 
     @PostMapping(path = "/account/team/create")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.NO_TEAM + "\")")
     public ResponseEntity<Void> createTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
         log.debug("REST request to save Team : {}", teamDTO);
         User user = userService.getUserWithAuthorities().orElseThrow(() -> new AccountResourceException("User could not be found"));
@@ -295,6 +297,7 @@ public class AccountResource {
     }
 
     @PutMapping(path = "/account/team/join")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.NO_TEAM + "\")")
     public ResponseEntity<Void> joinTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
         log.debug("REST request to join Team : {}", teamDTO);
         User user = userService.getUserWithAuthorities().orElseThrow(() -> new AccountResourceException("User could not be found"));
