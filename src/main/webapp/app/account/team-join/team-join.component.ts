@@ -1,21 +1,25 @@
-import { Component   } from '@angular/core';
+import { Component, OnInit   } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 import { TeamJoinService } from './team-join.service';
-import { TeamCreate } from './team-join.model';
+import { TeamJoin } from './team-join.model';
 import { AccountService } from 'app/core/auth/account.service';
+import { ITeam } from 'app/entities/team/team.model';
+import { TeamService } from 'app/entities/team/service/team.service';
 
 @Component({
     selector: 'jhi-team-join',
     templateUrl: './team-join.component.html',
   })
-  export class TeamJoinComponent {
+  export class TeamJoinComponent implements OnInit {
     doNotMatch = false;
     isSaving = false;
+
+    teams: ITeam[] = [];
 
     createForm = this.fb.group({
       name: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
@@ -29,8 +33,14 @@ import { AccountService } from 'app/core/auth/account.service';
       password: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
     });
   
-    constructor(protected teamJoinService: TeamJoinService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder, private router: Router, private accountService: AccountService) {}
+    constructor(protected teamService: TeamService, protected teamJoinService: TeamJoinService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder, private router: Router, private accountService: AccountService) {}
   
+    ngOnInit(): void {
+      this.teamService.query({page: 0, size: 1000}).subscribe((res: HttpResponse<ITeam[]>) => {
+        this.teams = res.body ?? [];
+      });
+    }
+
     create(): void {
       this.doNotMatch = false;
       
@@ -41,12 +51,14 @@ import { AccountService } from 'app/core/auth/account.service';
       }
 
       this.isSaving = true;
-      const team = this.createFromForm();
+      const team = this.getFromForm(this.createForm);
       this.subscribeToCreateResponse(this.teamJoinService.create(team));
     }
 
     join(): void {
-      // TODO
+      this.isSaving = true;
+      const team = this.getFromForm(this.joinForm);
+      this.subscribeToJoinResponse(this.teamJoinService.join(team));
     }
   
     protected subscribeToCreateResponse(result: Observable<HttpResponse<{}>>): void {
@@ -54,6 +66,13 @@ import { AccountService } from 'app/core/auth/account.service';
         () => this.onSuccess(),
         () => this.onError()
       );
+    }
+
+    protected subscribeToJoinResponse(result: Observable<{}>): void {
+      result.pipe(finalize(() => this.onFinalize())).subscribe(
+        () => this.onSuccess(),
+        () => this.onError()
+      )
     }
   
     protected onSuccess(): void {
@@ -68,11 +87,10 @@ import { AccountService } from 'app/core/auth/account.service';
       this.isSaving = false;
     }
   
-    protected createFromForm(): TeamCreate {
-      return new TeamCreate(
-        this.createForm.get(['name'])!.value, 
-        this.createForm.get(['password'])!.value
+    protected getFromForm(form: FormGroup): TeamJoin {
+      return new TeamJoin(
+        form.get(['name'])!.value, 
+        form.get(['password'])!.value
       );
     }
-
   } 

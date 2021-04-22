@@ -6,10 +6,12 @@ import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.AuthorityRepository;
 import fr.sii.scoreboard.repository.PersistentTokenRepository;
+import fr.sii.scoreboard.repository.TeamRepository;
 import fr.sii.scoreboard.repository.UserRepository;
 import fr.sii.scoreboard.security.AuthoritiesConstants;
 import fr.sii.scoreboard.security.SecurityUtils;
 import fr.sii.scoreboard.service.dto.AdminUserDTO;
+import fr.sii.scoreboard.service.dto.TeamJoinDTO;
 import fr.sii.scoreboard.service.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final TeamRepository teamRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private final PersistentTokenRepository persistentTokenRepository;
@@ -49,11 +53,13 @@ public class UserService {
 
     public UserService(
         UserRepository userRepository,
+        TeamRepository teamRepository,
         PasswordEncoder passwordEncoder,
         PersistentTokenRepository persistentTokenRepository,
         AuthorityRepository authorityRepository
     ) {
         this.userRepository = userRepository;
+        this.teamRepository = teamRepository;
         this.passwordEncoder = passwordEncoder;
         this.persistentTokenRepository = persistentTokenRepository;
         this.authorityRepository = authorityRepository;
@@ -232,6 +238,17 @@ public class UserService {
     public void joinTeam(User user, Team team) {
         user.setTeam(team);
         userRepository.save(user);
+    }
+
+    public void joinTeam(User user, TeamJoinDTO dto) {
+        Team team = teamRepository.findByName(dto.getName()).orElseThrow(TeamJoinException::new);
+
+        String currentEncryptedPassword = team.getPassword();
+        if (!passwordEncoder.matches(dto.getPassword(), currentEncryptedPassword)) {
+            throw new TeamJoinException();
+        }
+
+        joinTeam(user, team);
     }
 
     public void deleteUser(String login) {

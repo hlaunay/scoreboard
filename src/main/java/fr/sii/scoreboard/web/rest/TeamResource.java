@@ -4,8 +4,8 @@ import fr.sii.scoreboard.repository.TeamRepository;
 import fr.sii.scoreboard.service.TeamQueryService;
 import fr.sii.scoreboard.service.TeamService;
 import fr.sii.scoreboard.service.criteria.TeamCriteria;
-import fr.sii.scoreboard.service.dto.TeamCreateDTO;
 import fr.sii.scoreboard.service.dto.TeamDTO;
+import fr.sii.scoreboard.service.dto.TeamJoinDTO;
 import fr.sii.scoreboard.service.mapper.TeamMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class TeamResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/teams")
-    public ResponseEntity<TeamDTO> createTeam(@Valid @RequestBody TeamCreateDTO teamDTO) throws URISyntaxException {
+    public ResponseEntity<TeamDTO> createTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
         log.debug("REST request to save Team : {}", teamDTO);
         TeamDTO result = teamMapper.toDto(teamService.save(teamDTO));
         return ResponseEntity

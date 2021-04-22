@@ -2,8 +2,8 @@ package fr.sii.scoreboard.service;
 
 import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.repository.TeamRepository;
-import fr.sii.scoreboard.service.dto.TeamCreateDTO;
 import fr.sii.scoreboard.service.dto.TeamDTO;
+import fr.sii.scoreboard.service.dto.TeamJoinDTO;
 import fr.sii.scoreboard.service.mapper.TeamMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class TeamService {
      * @param teamDTO the entity to save.
      * @return the persisted entity.
      */
-    public Team save(TeamCreateDTO teamDTO) {
+    public Team save(TeamJoinDTO teamDTO) {
         log.debug("Request to save Team : {}", teamDTO);
 
         teamRepository.findByName(teamDTO.getName()).ifPresent(team -> {

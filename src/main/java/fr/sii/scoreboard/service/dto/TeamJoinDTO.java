@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * A DTO for the {@link Team} entity.
  */
-public class TeamCreateDTO implements Serializable {
+public class TeamJoinDTO implements Serializable {
 
     @NotNull
     @Size(min = 3, max = 50)
@@ -42,11 +42,11 @@ public class TeamCreateDTO implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TeamCreateDTO)) {
+        if (!(o instanceof TeamJoinDTO)) {
             return false;
         }
 
-        TeamCreateDTO teamDTO = (TeamCreateDTO) o;
+        TeamJoinDTO teamDTO = (TeamJoinDTO) o;
         if (this.name == null) {
             return false;
         }

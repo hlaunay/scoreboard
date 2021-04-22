@@ -111,7 +111,8 @@
       <div>
         <div class="form-group">
           <label class="form-control-label" for="field_name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name"/>
+          <input type="text" class="form-control" name="name" id="field_name" data-cy="joinName" formControlName="name"
+                 list="teams"/>
           <div *ngIf="joinForm.get('name')!.invalid && (joinForm.get('name')!.dirty || joinForm.get('name')!.touched)">
             <small class="form-text text-danger" *ngIf="joinForm.get('name')?.errors?.required"> This field is
               required. </small>
@@ -122,11 +123,14 @@
               This field cannot be longer than 50 characters.
             </small>
           </div>
+          <datalist id="teams">
+            <option *ngFor="let team of teams" value="{{ team.name }}">
+          </datalist>
         </div>
 
         <div class="form-group">
           <label class="form-control-label" for="field_password">Password</label>
-          <input type="text" class="form-control" name="password" id="field_password" data-cy="password"
+          <input type="password" class="form-control" name="password" id="field_password" data-cy="joinPassword"
                  formControlName="password"/>
           <div
             *ngIf="joinForm.get('password')!.invalid && (joinForm.get('password')!.dirty || joinForm.get('password')!.touched)">

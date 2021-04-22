@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { TeamCreate } from "./team-join.model";
+import { TeamJoin } from "./team-join.model";
 
 @Injectable({ providedIn: 'root' })
 export class TeamJoinService {
@@ -11,7 +11,11 @@ export class TeamJoinService {
 
     constructor(protected http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
 
-    create(team: TeamCreate): Observable<HttpResponse<{}>> {
-        return this.http.post<TeamCreate>(`${this.resourceUrl}/create`, team, { observe: 'response' });
+    create(team: TeamJoin): Observable<HttpResponse<{}>> {
+        return this.http.post<TeamJoin>(`${this.resourceUrl}/create`, team, { observe: 'response' });
+    }
+
+    join(team: TeamJoin): Observable<HttpResponse<{}>> {
+        return this.http.put<TeamJoin>(`${this.resourceUrl}/join`, team, { observe: 'response'});
     }
 }

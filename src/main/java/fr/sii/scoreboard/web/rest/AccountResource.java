@@ -12,7 +12,7 @@ import fr.sii.scoreboard.service.TeamService;
 import fr.sii.scoreboard.service.UserService;
 import fr.sii.scoreboard.service.dto.AdminUserDTO;
 import fr.sii.scoreboard.service.dto.PasswordChangeDTO;
-import fr.sii.scoreboard.service.dto.TeamCreateDTO;
+import fr.sii.scoreboard.service.dto.TeamJoinDTO;
 import fr.sii.scoreboard.web.rest.errors.EmailAlreadyUsedException;
 import fr.sii.scoreboard.web.rest.errors.InvalidPasswordException;
 import fr.sii.scoreboard.web.rest.errors.LoginAlreadyUsedException;
@@ -282,11 +282,23 @@ public class AccountResource {
     }
 
     @PostMapping(path = "/account/team/create")
-    public ResponseEntity<Void> createTeam(@Valid @RequestBody TeamCreateDTO teamDTO) throws URISyntaxException {
+    public ResponseEntity<Void> createTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
         log.debug("REST request to save Team : {}", teamDTO);
         User user = userService.getUserWithAuthorities().orElseThrow(() -> new AccountResourceException("User could not be found"));
         Team team = teamService.save(teamDTO);
         userService.joinTeam(user, team);
+
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createAlert(applicationName, "A user is updated with identifier " + user.getLogin(), user.getLogin()))
+            .build();
+    }
+
+    @PutMapping(path = "/account/team/join")
+    public ResponseEntity<Void> joinTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
+        log.debug("REST request to join Team : {}", teamDTO);
+        User user = userService.getUserWithAuthorities().orElseThrow(() -> new AccountResourceException("User could not be found"));
+        userService.joinTeam(user, teamDTO);
 
         return ResponseEntity
             .noContent()
