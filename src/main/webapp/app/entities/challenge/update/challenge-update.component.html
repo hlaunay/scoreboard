@@ -8,16 +8,14 @@
 
         <div class="form-group" [hidden]="editForm.get('id')!.value == null">
           <label class="form-control-label" for="field_id">ID</label>
-          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id"
-                 [readonly]="true"/>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
 
         <div class="form-group">
           <label class="form-control-label" for="field_name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name"/>
+          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
           <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.required"> This field is
-              required. </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.required"> This field is required. </small>
             <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.minlength">
               This field is required to be at least 4 characters.
             </small>
@@ -41,25 +39,18 @@
 
         <div class="form-group">
           <label class="form-control-label" for="field_points">Points</label>
-          <input type="number" class="form-control" name="points" id="field_points" data-cy="points"
-                 formControlName="points"/>
-          <div
-            *ngIf="editForm.get('points')!.invalid && (editForm.get('points')!.dirty || editForm.get('points')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('points')?.errors?.required"> This field is
-              required. </small>
-            <small class="form-text text-danger" [hidden]="!editForm.get('points')?.errors?.number"> This field should
-              be a number. </small>
+          <input type="number" class="form-control" name="points" id="field_points" data-cy="points" formControlName="points" />
+          <div *ngIf="editForm.get('points')!.invalid && (editForm.get('points')!.dirty || editForm.get('points')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('points')?.errors?.required"> This field is required. </small>
+            <small class="form-text text-danger" [hidden]="!editForm.get('points')?.errors?.number"> This field should be a number. </small>
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-control-label" for="field_answer">Answer</label>
-          <input type="text" class="form-control" name="answer" id="field_answer" data-cy="answer"
-                 formControlName="answer"/>
-          <div
-            *ngIf="editForm.get('answer')!.invalid && (editForm.get('answer')!.dirty || editForm.get('answer')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('answer')?.errors?.required"> This field is
-              required. </small>
+          <input type="text" class="form-control" name="answer" id="field_answer" data-cy="answer" formControlName="answer" />
+          <div *ngIf="editForm.get('answer')!.invalid && (editForm.get('answer')!.dirty || editForm.get('answer')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('answer')?.errors?.required"> This field is required. </small>
           </div>
         </div>
       </div>

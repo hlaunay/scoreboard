@@ -3,12 +3,7 @@
     {
       "fieldName": "name",
       "fieldType": "String",
-      "fieldValidateRules": [
-        "required",
-        "unique",
-        "minlength",
-        "maxlength"
-      ],
+      "fieldValidateRules": ["required", "unique", "minlength", "maxlength"],
       "fieldValidateRulesMinlength": "4",
       "fieldValidateRulesMaxlength": "100"
     },
@@ -19,16 +14,12 @@
     {
       "fieldName": "points",
       "fieldType": "Integer",
-      "fieldValidateRules": [
-        "required"
-      ]
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "answer",
       "fieldType": "String",
-      "fieldValidateRules": [
-        "required"
-      ]
+      "fieldValidateRules": ["required"]
     }
   ],
   "relationships": [],

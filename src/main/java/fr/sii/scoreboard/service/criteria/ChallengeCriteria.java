@@ -32,8 +32,7 @@ public class ChallengeCriteria implements Serializable, Criteria {
 
     private StringFilter answer;
 
-    public ChallengeCriteria() {
-    }
+    public ChallengeCriteria() {}
 
     public ChallengeCriteria(ChallengeCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
@@ -134,10 +133,10 @@ public class ChallengeCriteria implements Serializable, Criteria {
         final ChallengeCriteria that = (ChallengeCriteria) o;
         return (
             Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(points, that.points) &&
-                Objects.equals(answer, that.answer)
+            Objects.equals(name, that.name) &&
+            Objects.equals(description, that.description) &&
+            Objects.equals(points, that.points) &&
+            Objects.equals(answer, that.answer)
         );
     }
 

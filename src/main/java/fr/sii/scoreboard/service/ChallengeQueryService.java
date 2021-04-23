@@ -40,7 +40,6 @@ public class ChallengeQueryService extends QueryService<Challenge> {
 
     /**
      * Return a {@link List} of {@link ChallengeDTO} which matches the criteria from the database.
-     *
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the matching entities.
      */
@@ -53,9 +52,8 @@ public class ChallengeQueryService extends QueryService<Challenge> {
 
     /**
      * Return a {@link Page} of {@link ChallengeDTO} which matches the criteria from the database.
-     *
      * @param criteria The object which holds all the filters, which the entities should match.
-     * @param page     The page, which should be returned.
+     * @param page The page, which should be returned.
      * @return the matching entities.
      */
     @Transactional(readOnly = true)
@@ -67,7 +65,6 @@ public class ChallengeQueryService extends QueryService<Challenge> {
 
     /**
      * Return the number of matching entities in the database.
-     *
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the number of matching entities.
      */
@@ -80,7 +77,6 @@ public class ChallengeQueryService extends QueryService<Challenge> {
 
     /**
      * Function to convert {@link ChallengeCriteria} to a {@link Specification}
-     *
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the matching {@link Specification} of the entity.
      */

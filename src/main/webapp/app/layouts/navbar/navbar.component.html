@@ -66,6 +66,18 @@
               <span>Challenge</span>
             </a>
           </li>
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="answer"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="collapseNavbar()"
+            >
+              <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
+              <span>Answer</span>
+            </a>
+          </li>
           <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
         </ul>
       </li>
@@ -147,15 +159,13 @@
         </a>
         <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
           <li *ngSwitchCase="true">
-            <a class="dropdown-item" routerLink="account/settings" routerLinkActive="active" (click)="collapseNavbar()"
-               data-cy="settings">
+            <a class="dropdown-item" routerLink="account/settings" routerLinkActive="active" (click)="collapseNavbar()" data-cy="settings">
               <fa-icon icon="wrench" [fixedWidth]="true"></fa-icon>
               <span>Settings</span>
             </a>
           </li>
           <li *jhiHasAnyAuthority="'ROLE_NO_TEAM'">
-            <a class="dropdown-item" routerLink="account/team-join" routerLinkActive="active" (click)="collapseNavbar()"
-               data-cy="teamJoin">
+            <a class="dropdown-item" routerLink="account/team-join" routerLinkActive="active" (click)="collapseNavbar()" data-cy="teamJoin">
               <fa-icon icon="user-friends" [fixedWidth]="true"></fa-icon>
               <span>Team</span>
             </a>

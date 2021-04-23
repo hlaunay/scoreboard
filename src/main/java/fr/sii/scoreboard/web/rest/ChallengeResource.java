@@ -118,7 +118,7 @@ public class ChallengeResource {
     /**
      * {@code PATCH  /challenges/:id} : Partial updates given fields of an existing challenge, field will ignore if it is null
      *
-     * @param id           the id of the challengeDTO to save.
+     * @param id the id of the challengeDTO to save.
      * @param challengeDTO the challengeDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated challengeDTO,
      * or with status {@code 400 (Bad Request)} if the challengeDTO is not valid,

@@ -1,0 +1,44 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="answer">
+      <h2 data-cy="answerDetailsHeading"><span>Answer</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ answer.id }}</span>
+        </dd>
+        <dt><span>Date</span></dt>
+        <dd>
+          <span>{{ answer.date | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span>Challenge</span></dt>
+        <dd>
+          <div *ngIf="answer.challenge">
+            <a [routerLink]="['/challenge', answer.challenge?.id, 'view']">{{ answer.challenge?.name }}</a>
+          </div>
+        </dd>
+        <dt><span>Team</span></dt>
+        <dd>
+          <div *ngIf="answer.team">
+            <a [routerLink]="['/team', answer.team?.id, 'view']">{{ answer.team?.name }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/answer', answer.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

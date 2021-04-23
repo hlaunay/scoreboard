@@ -21,6 +21,14 @@ import { Authority } from 'app/config/authority.constants';
         },
         loadChildren: () => import('./challenge/challenge.module').then(m => m.ChallengeModule),
       },
+      {
+        path: 'answer',
+        data: {
+          pageTitle: 'Answers',
+          authorities: [Authority.ADMIN],
+        },
+        loadChildren: () => import('./answer/answer.module').then(m => m.AnswerModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],
