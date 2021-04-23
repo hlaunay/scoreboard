@@ -41,8 +41,14 @@
     "packageFolder": "fr/sii/scoreboard",
     "rememberMeKey": "0ea2df1388d481d71dea313285bfbcd4846a4b5ea4f8b4a8aa4b140f75974000353e7967d3c9fef079f4f7dda880c5182c86",
     "clientPackageManager": "npm",
-    "languages": ["en", "fr"],
-    "lastLiquibaseTimestamp": 1617021461000,
-    "entities": ["Team"]
+    "languages": [
+      "en",
+      "fr"
+    ],
+    "lastLiquibaseTimestamp": 1619167124000,
+    "entities": [
+      "Team",
+      "Challenge"
+    ]
   }
 }

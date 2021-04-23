@@ -7,11 +7,19 @@ import { Authority } from 'app/config/authority.constants';
     RouterModule.forChild([
       {
         path: 'team',
-        data: { 
+        data: {
           pageTitle: 'Teams',
-          authorities: [Authority.ADMIN], 
+          authorities: [Authority.ADMIN],
         },
         loadChildren: () => import('./team/team.module').then(m => m.TeamModule),
+      },
+      {
+        path: 'challenge',
+        data: {
+          pageTitle: 'Challenges',
+          authorities: [Authority.ADMIN],
+        },
+        loadChildren: () => import('./challenge/challenge.module').then(m => m.ChallengeModule),
       },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
