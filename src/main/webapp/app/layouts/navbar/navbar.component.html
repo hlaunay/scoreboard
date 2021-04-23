@@ -26,6 +26,14 @@
           </span>
         </a>
       </li>
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <a class="nav-link" routerLink="/play" (click)="collapseNavbar()">
+          <span>
+            <fa-icon icon="play"></fa-icon>
+            <span>Play</span>
+          </span>
+        </a>
+      </li>
       <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
       <li
         *jhiHasAnyAuthority="'ROLE_ADMIN'"
@@ -35,7 +43,8 @@
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
       >
-        <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu" data-cy="entity">
+        <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu"
+           data-cy="entity">
           <span>
             <fa-icon icon="th-list"></fa-icon>
             <span>Entities</span>
