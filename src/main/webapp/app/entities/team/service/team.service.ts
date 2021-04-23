@@ -1,10 +1,11 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { Observable } from 'rxjs';
-import { ITeam } from '../team.model';
-
+import { ITeam, getTeamIdentifier } from '../team.model';
 
 export type EntityResponseType = HttpResponse<ITeam>;
 export type EntityArrayResponseType = HttpResponse<ITeam[]>;
@@ -26,5 +27,22 @@ export class TeamService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  addTeamToCollectionIfMissing(teamCollection: ITeam[], ...teamsToCheck: (ITeam | null | undefined)[]): ITeam[] {
+    const teams: ITeam[] = teamsToCheck.filter(isPresent);
+    if (teams.length > 0) {
+      const teamCollectionIdentifiers = teamCollection.map(teamItem => getTeamIdentifier(teamItem)!);
+      const teamsToAdd = teams.filter(teamItem => {
+        const teamIdentifier = getTeamIdentifier(teamItem);
+        if (teamIdentifier == null || teamCollectionIdentifiers.includes(teamIdentifier)) {
+          return false;
+        }
+        teamCollectionIdentifiers.push(teamIdentifier);
+        return true;
+      });
+      return [...teamsToAdd, ...teamCollection];
+    }
+    return teamCollection;
   }
 }
