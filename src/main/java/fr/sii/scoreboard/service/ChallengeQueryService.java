@@ -52,15 +52,20 @@ public class ChallengeQueryService extends QueryService<Challenge> {
 
     /**
      * Return a {@link Page} of {@link ChallengeDTO} which matches the criteria from the database.
+     *
      * @param criteria The object which holds all the filters, which the entities should match.
-     * @param page The page, which should be returned.
+     * @param page     The page, which should be returned.
      * @return the matching entities.
      */
     @Transactional(readOnly = true)
-    public Page<ChallengeDTO> findByCriteria(ChallengeCriteria criteria, Pageable page) {
+    public Page<ChallengeDTO> findByCriteria(ChallengeCriteria criteria, Pageable page, Boolean isAdmin) {
         log.debug("find by criteria : {}, page: {}", criteria, page);
         final Specification<Challenge> specification = createSpecification(criteria);
-        return challengeRepository.findAll(specification, page).map(challengeMapper::toDto);
+        if (isAdmin) {
+            return challengeRepository.findAll(specification, page).map(challengeMapper::toDto);
+        }
+
+        return challengeRepository.findAll(specification, page).map(challengeMapper::toGuardedDto);
     }
 
     /**

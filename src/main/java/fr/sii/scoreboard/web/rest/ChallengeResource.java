@@ -2,6 +2,7 @@ package fr.sii.scoreboard.web.rest;
 
 import fr.sii.scoreboard.repository.ChallengeRepository;
 import fr.sii.scoreboard.security.AuthoritiesConstants;
+import fr.sii.scoreboard.security.SecurityUtils;
 import fr.sii.scoreboard.service.ChallengeQueryService;
 import fr.sii.scoreboard.service.ChallengeService;
 import fr.sii.scoreboard.service.criteria.ChallengeCriteria;
@@ -160,10 +161,9 @@ public class ChallengeResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of challenges in body.
      */
     @GetMapping("/challenges")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<List<ChallengeDTO>> getAllChallenges(ChallengeCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Challenges by criteria: {}", criteria);
-        Page<ChallengeDTO> page = challengeQueryService.findByCriteria(criteria, pageable);
+        Page<ChallengeDTO> page = challengeQueryService.findByCriteria(criteria, pageable, SecurityUtils.hasCurrentUserThisAuthority(AuthoritiesConstants.ADMIN));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -175,7 +175,6 @@ public class ChallengeResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
      */
     @GetMapping("/challenges/count")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Long> countChallenges(ChallengeCriteria criteria) {
         log.debug("REST request to count Challenges by criteria: {}", criteria);
         return ResponseEntity.ok().body(challengeQueryService.countByCriteria(criteria));

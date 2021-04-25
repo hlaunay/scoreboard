@@ -17,4 +17,8 @@ public interface ChallengeMapper extends EntityMapper<ChallengeDTO, Challenge> {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     ChallengeDTO toDtoName(Challenge challenge);
+
+    @Named("guarded")
+    @Mapping(target = "answer", ignore = true)
+    ChallengeDTO toGuardedDto(Challenge challenge);
 }
