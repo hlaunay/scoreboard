@@ -1,5 +1,5 @@
 import { HttpResponse } from "@angular/common/http";
-import { Component, Input } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { IAnswer } from "app/entities/answer/answer.model";
 import { Challenge, IChallenge } from "app/entities/challenge/challenge.model";
@@ -18,6 +18,10 @@ export class PlayCardComponent {
     @Input() challenge: IChallenge = new Challenge();
 
     @Input() answer: IAnswer | undefined;
+
+    @Output() validated = new EventEmitter<IChallenge>();
+
+    @Output() badResponse = new EventEmitter<IChallenge>();
 
     createForm = this.fb.group({
         answer: [null, [Validators.required]],
@@ -50,15 +54,15 @@ export class PlayCardComponent {
       }
     
       protected onSuccess(): void { 
-        // TODO
+        this.validated.emit(this.challenge);
       }
     
       protected onError(): void {
-        // Api for inheritance.
+        this.badResponse.emit(this.challenge);
       }
-    
-      protected onFinalize(): void { 
-        // TODO
+
+      protected onFinalize(): void {
+        this.createForm.reset();
       }
     
       protected getFromForm(form: FormGroup): AnswerSubmit {

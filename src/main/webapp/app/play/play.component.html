@@ -1,7 +1,10 @@
-<h1 class="display-4">Play</h1>
+<h1 class="display-4 mb-4">Play</h1>
 
-<div class="row row-cols-1 row-cols-md-6">
+<jhi-alert></jhi-alert>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6">
   <div class="col mb-4" *ngFor="let challenge of challenges">
-    <jhi-play-card class="h-100" [challenge]="challenge" [answer]="getAnswer(challenge.id)"></jhi-play-card>
+    <jhi-play-card class="h-100" [challenge]="challenge" [answer]="getAnswer(challenge.id)"
+                   (validated)="onValidated($event)" (badResponse)="onInvalid($event)"></jhi-play-card>
   </div>
 </div>
