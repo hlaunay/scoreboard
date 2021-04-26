@@ -1,10 +1,14 @@
 package fr.sii.scoreboard.web.rest;
 
+import fr.sii.scoreboard.domain.Team;
+import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.security.AuthoritiesConstants;
 import fr.sii.scoreboard.service.TeamQueryService;
 import fr.sii.scoreboard.service.TeamService;
+import fr.sii.scoreboard.service.UserService;
 import fr.sii.scoreboard.service.criteria.TeamCriteria;
 import fr.sii.scoreboard.service.dto.TeamDTO;
+import fr.sii.scoreboard.service.dto.TeamJoinDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +23,8 @@ import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
+import javax.validation.Valid;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,11 +42,14 @@ public class TeamResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
+    private final UserService userService;
+
     private final TeamService teamService;
 
     private final TeamQueryService teamQueryService;
 
-    public TeamResource(TeamService teamService, TeamQueryService teamQueryService) {
+    public TeamResource(UserService userService, TeamService teamService, TeamQueryService teamQueryService) {
+        this.userService = userService;
         this.teamService = teamService;
         this.teamQueryService = teamQueryService;
     }
@@ -102,6 +111,34 @@ public class TeamResource {
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .build();
+    }
+
+
+    @PostMapping(path = "/account/team/create")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.NO_TEAM + "\")")
+    public ResponseEntity<Void> createTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
+        log.debug("REST request to save Team : {}", teamDTO);
+        User user = userService.getUserWithAuthorities().orElseThrow(() -> new RuntimeException("User could not be found"));
+        Team team = teamService.save(teamDTO);
+        userService.joinTeam(user, team);
+
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createAlert(applicationName, "A user is updated with identifier " + user.getLogin(), user.getLogin()))
+            .build();
+    }
+
+    @PutMapping(path = "/account/team/join")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.NO_TEAM + "\")")
+    public ResponseEntity<Void> joinTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
+        log.debug("REST request to join Team : {}", teamDTO);
+        User user = userService.getUserWithAuthorities().orElseThrow(() -> new RuntimeException("User could not be found"));
+        userService.joinTeam(user, teamDTO);
+
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createAlert(applicationName, "A user is updated with identifier " + user.getLogin(), user.getLogin()))
             .build();
     }
 }

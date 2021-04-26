@@ -1,14 +1,18 @@
 package fr.sii.scoreboard.service;
 
 import fr.sii.scoreboard.domain.Answer;
+import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.AnswerRepository;
+import fr.sii.scoreboard.repository.ChallengeRepository;
 import fr.sii.scoreboard.service.dto.AnswerDTO;
+import fr.sii.scoreboard.service.dto.AnswerSubmitDTO;
 import fr.sii.scoreboard.service.mapper.AnswerMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -25,10 +29,13 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
 
+    private final ChallengeRepository challengeRepository;
+
     private final AnswerMapper answerMapper;
 
-    public AnswerService(AnswerRepository answerRepository, AnswerMapper answerMapper) {
+    public AnswerService(AnswerRepository answerRepository, ChallengeRepository challengeRepository, AnswerMapper answerMapper) {
         this.answerRepository = answerRepository;
+        this.challengeRepository = challengeRepository;
         this.answerMapper = answerMapper;
     }
 
@@ -97,5 +104,28 @@ public class AnswerService {
     public void delete(Long id) {
         log.debug("Request to delete Answer : {}", id);
         answerRepository.deleteById(id);
+    }
+
+    public List<AnswerDTO> findAllForAccount(User user) {
+        log.debug("Request to get all Answers for account : {}", user);
+        return answerRepository.findAllByTeam(user.getTeam()).stream().map(answerMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    @Transactional
+    public Optional<AnswerDTO> submitAnswer(User user, AnswerSubmitDTO answerSubmitDTO) {
+        log.debug("Request to submit Answers for challenge {} with account : {}", answerSubmitDTO.getChallengeId(), user);
+        return challengeRepository.findById(answerSubmitDTO.getChallengeId())
+            .filter(challenge -> challenge.getAnswer().equals(answerSubmitDTO.getAnswer()))
+            .map(challenge -> {
+                Answer answer = new Answer();
+                answer.setDate(Instant.now());
+                answer.setChallenge(challenge);
+                answer.setTeam(user.getTeam());
+
+                answerRepository.saveAndFlush(answer);
+
+                return answerMapper.toDto(answer);
+            });
+
     }
 }

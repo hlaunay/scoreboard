@@ -1,0 +1,24 @@
+<div [ngClass]="getClasses()" style="max-width: 18rem;">
+  <div class="card-header">Challenge #{{ challenge.id }}</div>
+  <div class="card-body">
+    <h5 class="card-title">{{ challenge.name }}</h5>
+    <p class="card-text">{{ challenge.description }}</p>
+    <form *ngIf="isNotResolved()" name="createForm" role="form" novalidate (ngSubmit)="create()"
+          [formGroup]="createForm">
+      <div class="form-group">
+        <label class="form-control-label" for="answer-{{ challenge.id }}">Answer</label>
+        <input type="text" class="form-control" name="answer" id="answer-{{ challenge.id }}" formControlName="answer">
+        <div
+          *ngIf="createForm.get('answer')!.invalid && (createForm.get('answer')!.dirty || createForm.get('answer')!.touched)">
+          <small class="form-text text-danger" *ngIf="createForm.get('answer')?.errors?.required"> This field is
+            required. </small>
+        </div>
+      </div>
+      <button type="submit" id="submit-answer" class="btn btn-warning" [disabled]="createForm.invalid">
+
+        <fa-icon icon="check"></fa-icon>&nbsp;<span>Submit</span>
+      </button>
+    </form>
+  </div>
+  <div class="card-footer text-right">{{ challenge.points }} points</div>
+</div>

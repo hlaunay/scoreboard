@@ -1,1 +1,7 @@
-<h1>Play</h1>
+<h1 class="display-4">Play</h1>
+
+<div class="row row-cols-1 row-cols-md-6">
+  <div class="col mb-4" *ngFor="let challenge of challenges">
+    <jhi-play-card class="h-100" [challenge]="challenge" [answer]="getAnswer(challenge.id)"></jhi-play-card>
+  </div>
+</div>

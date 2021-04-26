@@ -1,9 +1,12 @@
 package fr.sii.scoreboard.web.rest;
 
+import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.AnswerRepository;
 import fr.sii.scoreboard.security.AuthoritiesConstants;
 import fr.sii.scoreboard.service.AnswerService;
+import fr.sii.scoreboard.service.UserService;
 import fr.sii.scoreboard.service.dto.AnswerDTO;
+import fr.sii.scoreboard.service.dto.AnswerSubmitDTO;
 import fr.sii.scoreboard.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +39,14 @@ public class AnswerResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
+    private final UserService userService;
+
     private final AnswerService answerService;
 
     private final AnswerRepository answerRepository;
 
-    public AnswerResource(AnswerService answerService, AnswerRepository answerRepository) {
+    public AnswerResource(UserService userService, AnswerService answerService, AnswerRepository answerRepository) {
+        this.userService = userService;
         this.answerService = answerService;
         this.answerRepository = answerRepository;
     }
@@ -179,5 +185,20 @@ public class AnswerResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/account/answers")
+    public List<AnswerDTO> getAllAccountAnswers() {
+        log.debug("REST request to get all Answers for account");
+        User user = userService.getUserWithAuthorities().orElseThrow(() -> new RuntimeException("User could not be found"));
+        return answerService.findAllForAccount(user);
+    }
+
+    @PostMapping("/account/answers")
+    public ResponseEntity<AnswerDTO> submitAnswer(@Valid @RequestBody AnswerSubmitDTO answerSubmitDTO) {
+        log.debug("REST request to submit Answer for account");
+        User user = userService.getUserWithAuthorities().orElseThrow(() -> new RuntimeException("User could not be found"));
+        Optional<AnswerDTO> answerDTO = answerService.submitAnswer(user, answerSubmitDTO);
+        return ResponseUtil.wrapOrNotFound(answerDTO);
     }
 }

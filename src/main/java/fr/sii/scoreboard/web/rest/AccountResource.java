@@ -1,18 +1,15 @@
 package fr.sii.scoreboard.web.rest;
 
 import fr.sii.scoreboard.domain.PersistentToken;
-import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.PersistentTokenRepository;
 import fr.sii.scoreboard.repository.UserRepository;
 import fr.sii.scoreboard.security.AuthoritiesConstants;
 import fr.sii.scoreboard.security.SecurityUtils;
 import fr.sii.scoreboard.service.MailService;
-import fr.sii.scoreboard.service.TeamService;
 import fr.sii.scoreboard.service.UserService;
 import fr.sii.scoreboard.service.dto.AdminUserDTO;
 import fr.sii.scoreboard.service.dto.PasswordChangeDTO;
-import fr.sii.scoreboard.service.dto.TeamJoinDTO;
 import fr.sii.scoreboard.web.rest.errors.EmailAlreadyUsedException;
 import fr.sii.scoreboard.web.rest.errors.InvalidPasswordException;
 import fr.sii.scoreboard.web.rest.errors.LoginAlreadyUsedException;
@@ -23,15 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import tech.jhipster.web.util.HeaderUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Optional;
@@ -59,8 +52,6 @@ public class AccountResource {
 
     private final UserService userService;
 
-    private final TeamService teamService;
-
     private final MailService mailService;
 
     private final PersistentTokenRepository persistentTokenRepository;
@@ -68,13 +59,11 @@ public class AccountResource {
     public AccountResource(
         UserRepository userRepository,
         UserService userService,
-        TeamService teamService,
         MailService mailService,
         PersistentTokenRepository persistentTokenRepository
     ) {
         this.userRepository = userRepository;
         this.userService = userService;
-        this.teamService = teamService;
         this.mailService = mailService;
         this.persistentTokenRepository = persistentTokenRepository;
     }
@@ -280,32 +269,5 @@ public class AccountResource {
                 password.length() < ManagedUserVM.PASSWORD_MIN_LENGTH ||
                 password.length() > ManagedUserVM.PASSWORD_MAX_LENGTH
         );
-    }
-
-    @PostMapping(path = "/account/team/create")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.NO_TEAM + "\")")
-    public ResponseEntity<Void> createTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
-        log.debug("REST request to save Team : {}", teamDTO);
-        User user = userService.getUserWithAuthorities().orElseThrow(() -> new AccountResourceException("User could not be found"));
-        Team team = teamService.save(teamDTO);
-        userService.joinTeam(user, team);
-
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createAlert(applicationName, "A user is updated with identifier " + user.getLogin(), user.getLogin()))
-            .build();
-    }
-
-    @PutMapping(path = "/account/team/join")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.NO_TEAM + "\")")
-    public ResponseEntity<Void> joinTeam(@Valid @RequestBody TeamJoinDTO teamDTO) throws URISyntaxException {
-        log.debug("REST request to join Team : {}", teamDTO);
-        User user = userService.getUserWithAuthorities().orElseThrow(() -> new AccountResourceException("User could not be found"));
-        userService.joinTeam(user, teamDTO);
-
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createAlert(applicationName, "A user is updated with identifier " + user.getLogin(), user.getLogin()))
-            .build();
     }
 }
