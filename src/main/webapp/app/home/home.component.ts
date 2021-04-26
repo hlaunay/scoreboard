@@ -4,6 +4,9 @@ import { Subscription } from 'rxjs';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
+import { TeamService } from 'app/entities/team/service/team.service';
+import { IScore } from 'app/entities/team/team.model';
+import { HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'jhi-home',
@@ -13,11 +16,15 @@ import { Account } from 'app/core/auth/account.model';
 export class HomeComponent implements OnInit, OnDestroy {
   account: Account | null = null;
   authSubscription?: Subscription;
+  scores: IScore[] = [];
 
-  constructor(private accountService: AccountService, private router: Router) {}
+  constructor(private accountService: AccountService, private router: Router, private teamService: TeamService) {}
 
   ngOnInit(): void {
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
+    this.teamService.getScores().subscribe((res: HttpResponse<IScore[]>) => {
+      this.scores = res.body ?? [];
+    });
   }
 
   isAuthenticated(): boolean {
@@ -32,5 +39,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
+  }
+
+  getRowClasses(row: IScore): string[] {
+    if(row.team === this.account?.team?.name) {
+      return ['table-info'];
+    }
+    return [];
   }
 }

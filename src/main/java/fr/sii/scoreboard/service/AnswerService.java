@@ -1,11 +1,13 @@
 package fr.sii.scoreboard.service;
 
 import fr.sii.scoreboard.domain.Answer;
+import fr.sii.scoreboard.domain.Score;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.repository.AnswerRepository;
 import fr.sii.scoreboard.repository.ChallengeRepository;
 import fr.sii.scoreboard.service.dto.AnswerDTO;
 import fr.sii.scoreboard.service.dto.AnswerSubmitDTO;
+import fr.sii.scoreboard.service.dto.ScoreDTO;
 import fr.sii.scoreboard.service.mapper.AnswerMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -127,5 +130,24 @@ public class AnswerService {
                 return answerMapper.toDto(answer);
             });
 
+    }
+
+    public List<ScoreDTO> findScores() {
+        log.debug("Request to get all Scores");
+        List<Score> scores = answerRepository.findScores();
+        List<ScoreDTO> results = new ArrayList<>();
+
+        for (int i = 0; i < scores.size(); i++) {
+            Score score = scores.get(i);
+            ScoreDTO dto = new ScoreDTO();
+            dto.setPosition(i + 1);
+            dto.setTeam(score.getTeam());
+            dto.setPoints(score.getPoints());
+            dto.setFirstAnswer(score.getFirst());
+
+            results.add(dto);
+        }
+
+        return results;
     }
 }

@@ -3,10 +3,12 @@ package fr.sii.scoreboard.web.rest;
 import fr.sii.scoreboard.domain.Team;
 import fr.sii.scoreboard.domain.User;
 import fr.sii.scoreboard.security.AuthoritiesConstants;
+import fr.sii.scoreboard.service.AnswerService;
 import fr.sii.scoreboard.service.TeamQueryService;
 import fr.sii.scoreboard.service.TeamService;
 import fr.sii.scoreboard.service.UserService;
 import fr.sii.scoreboard.service.criteria.TeamCriteria;
+import fr.sii.scoreboard.service.dto.ScoreDTO;
 import fr.sii.scoreboard.service.dto.TeamDTO;
 import fr.sii.scoreboard.service.dto.TeamJoinDTO;
 import org.slf4j.Logger;
@@ -44,12 +46,15 @@ public class TeamResource {
 
     private final UserService userService;
 
+    private final AnswerService answerService;
+
     private final TeamService teamService;
 
     private final TeamQueryService teamQueryService;
 
-    public TeamResource(UserService userService, TeamService teamService, TeamQueryService teamQueryService) {
+    public TeamResource(UserService userService, AnswerService answerService, TeamService teamService, TeamQueryService teamQueryService) {
         this.userService = userService;
+        this.answerService = answerService;
         this.teamService = teamService;
         this.teamQueryService = teamQueryService;
     }
@@ -140,5 +145,11 @@ public class TeamResource {
             .noContent()
             .headers(HeaderUtil.createAlert(applicationName, "A user is updated with identifier " + user.getLogin(), user.getLogin()))
             .build();
+    }
+
+    @GetMapping(path = "/teams/ranking")
+    public List<ScoreDTO> getScores() {
+        log.debug("REST request to get Scores");
+        return answerService.findScores();
     }
 }

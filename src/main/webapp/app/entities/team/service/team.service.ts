@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { ITeam, getTeamIdentifier } from '../team.model';
+import { ITeam, getTeamIdentifier, IScore } from '../team.model';
 
 export type EntityResponseType = HttpResponse<ITeam>;
 export type EntityArrayResponseType = HttpResponse<ITeam[]>;
@@ -23,6 +23,10 @@ export class TeamService {
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<ITeam[]>(this.resourceUrl, { params: options, observe: 'response' });
+  }
+
+  getScores(): Observable<HttpResponse<IScore[]>> {
+    return this.http.get<IScore[]>(`${this.resourceUrl}/ranking`, { observe: 'response' });
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
